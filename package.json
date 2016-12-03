@@ -1,0 +1,26 @@
+{
+  "name": "purple-steam",
+  "version": "1.0.0",
+  "description": "do or do not, there is no try",
+  "main": "root/main.js",
+  "scripts": {
+    "start": "babel-node root/main.js",
+    "conv": "node conv.js",
+    "brain": "node brain.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "private": true,
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "array-tools": "^2.0.9",
+    "array-unique": "^0.3.2",
+    "babel-root-slash-import": "^1.1.0",
+    "brain": "^0.7.0",
+    "jsonfile": "^2.4.0",
+    "read-file": "^0.2.0",
+    "sorted-array": "^2.0.1",
+    "split-string-words": "^1.0.0",
+    "string": "^3.3.3"
+  }
+}
