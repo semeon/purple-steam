@@ -4,9 +4,11 @@ const split = require('split-string-words')
 const arrayTools = require("array-tools")
 const SortedArray = require("sorted-array")
 
-// import * from 'read-file'
+const jsonfile = require('jsonfile')
+jsonfile.spaces = 2
 
-const textFileName = 'root/data/data.txt'
+const textFileName = 'root/data/raw/data.txt'
+const linesJsonFileName = 'root/data/input/lines.json'
 
 export class Source {
 	constructor(props) {
@@ -36,9 +38,14 @@ export class Source {
 	}
 
 	buildLists() {
-		this.lines = S(this.text).lines()
-		let words = []
 		
+		// Lines
+		this.lines = S(this.text).lines()
+		jsonfile.writeFileSync(linesJsonFileName, this.lines)
+		
+		
+		// Words
+		let words = []
 		for (var i=0; i<this.lines.length; i++) {
 			let w = split(this.lines[i])
 			words = words.concat(w)

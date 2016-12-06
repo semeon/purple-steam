@@ -1,7 +1,7 @@
 const jsonfile = require('jsonfile')
 jsonfile.spaces = 2
 
-const vocabFileName = 'root/data/vocab.json'
+const vocabFileName = 'root/data/input/vocab.json'
 
 export class Vocab {
 	constructor(props) {
@@ -11,10 +11,10 @@ export class Vocab {
 	}
 
 	getItem(props) {
-		let result
+		let result = null
 		for (let i=0; i<this.vocab.array.length; i++) {
 			let item = this.vocab.array[i]
-			if (props.code == item.code || props.value == item.value) {
+			if (props.code == item.code || props.value == item.value || props.normCode == item.normCode) {
 				result = item
 			}
 		}
@@ -35,12 +35,11 @@ export class Vocab {
 			let item = {}
 			item.code = i
 			item.value = words[i]
+			item.normCode = i/props.words.length
+			
 			this.vocab.array.push(item)
 		}
 		this.vocab.stats.totalItems = this.vocab.array.length
 		jsonfile.writeFileSync(vocabFileName, this.vocab)		
 	}
-
-
-	
 }
