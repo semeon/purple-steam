@@ -21,6 +21,9 @@ export class Vocab {
 		return result
 	}
 
+	getSize() {
+		return this.vocab.array.lengh
+	}
 
 	init(props) {
 		console.log("Init Vocabulary")
@@ -30,13 +33,11 @@ export class Vocab {
 
 	generate(props) {
 		let words = props.words
-
 		for (let i=0; i<words.length; i++) {
 			let item = {}
 			item.code = i
 			item.value = words[i]
 			item.normCode = i/props.words.length
-			
 			this.vocab.array.push(item)
 		}
 		this.vocab.stats.totalItems = this.vocab.array.length
