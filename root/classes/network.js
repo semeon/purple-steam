@@ -1,33 +1,29 @@
 // https://github.com/harthur/brain
-
 const brain = require("brain");
+const sortObj = require('sort-object');
+
+const jsonfile = require('jsonfile')
+jsonfile.spaces = 2
+
+const networkJsonFileName = 'root/data/network/nn.json' 
 
 export class Network {
 	constructor(props) {
-		this.net = new brain.NeuralNetwork()
-		this.vocab
-		this.patterns
+		// this.net = new brain.NeuralNetwork({hiddenLayers: [16, 16, 16, 16, 16, 16]})
+		this.net = new brain.NeuralNetwork({hiddenLayers: [16, 16]})
+		// this.net = new brain.NeuralNetwork()
 	}
 
 	init(props) {
-		this.vocab = props.vocab
-		this.patterns = props.patterns
 	}
 	
 	train(props) {
-		console.log("Training started..")
+		console.log("")
+		console.log("====== Start Training ===================")
 
 		let trainingData = []
-
-	  // trainingData = [
-	  // 	 	 {input: [0, 0, 0], output: {start:1} },
-	  // 	 	 {input: [0.666, 0.333, 0], output: {for:1} },
-	  // 	 	 {input: [0.333, 0, 0.666], output: {'will':1} },
-	  // 	 	 {input: [0, 0.333, 0.666], output: {'America':1} },
-	  // ]
-		
-		for (let i=0; i<this.patterns.length; i++) {
-			let pattern = this.patterns[i]
+		for (let i=0; i<props.patterns.length; i++) {
+			let pattern = props.patterns[i]
 			let trainingCase = {}
 
 			trainingCase.input = pattern.preSequenceNorm
@@ -37,12 +33,49 @@ export class Network {
 			trainingData.push(trainingCase)
 		}
 		
-		console.log("Training Data: ")
-		console.dir(trainingData)
-		
-		let trainResult = this.net.train(trainingData)
-		
+		// console.log("Training Data: ")
+		// console.dir(trainingData)
+		let trainResult = this.net.train(trainingData,{log: true, logPeriod: 100})
 		console.log("Training completed. Result:")
 		console.dir(trainResult)
+		
+		this.saveNetwork()
+	}
+	
+	saveNetwork() {
+		console.log("")
+		console.log("====== Save Trained Network ===================")			
+		let nnJson = this.net.toJSON()
+		jsonfile.writeFileSync(networkJsonFileName, nnJson)		
+	}
+
+	loadNetwork() {
+		console.log("")
+		console.log("====== Load Trained Network ===================")		
+		let nnJson = jsonfile.readFileSync(networkJsonFileName)		
+		this.net.fromJSON(nnJson)
+	}
+	
+	run(props) {
+		let normSeq = props.normSeq
+		let prediction = this.net.run(normSeq)
+
+		let bestOption = {}
+		bestOption.rank = 0
+		bestOption.value = ""
+
+		for (var option in prediction) {
+			let rank = prediction[option]
+			if (bestOption.rank < rank) {
+				bestOption.rank = rank
+				bestOption.value = option
+			}
+		}
+		
+		// console.log(">>>>>> Run: " + seed.preSequence)
+		// console.dir(bestOption)
+
+		return bestOption.value
+		
 	}
 }

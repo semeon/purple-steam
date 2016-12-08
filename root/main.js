@@ -1,8 +1,17 @@
 import {Application} from '/root/classes/application.js'
 
-console.log("Main.js started")
+let param = process.argv[2]
 
 let app = new Application()
 app.init()
-app.test()
 
+if (param == "train") {
+	app.trainNetwork()
+
+} else if(param == "generate") {
+	app.generateOutput()
+
+} else {
+	app.trainNetwork()
+	app.generateOutput()
+}

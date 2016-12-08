@@ -38,6 +38,7 @@ export class Vocab {
 			item.code = i
 			item.value = words[i]
 			item.normCode = i/props.words.length
+			item.normCode = Math.round(item.normCode * 100000) / 100000
 			this.vocab.array.push(item)
 		}
 		this.vocab.stats.totalItems = this.vocab.array.length
