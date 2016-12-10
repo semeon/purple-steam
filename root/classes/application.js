@@ -10,17 +10,21 @@ export class Application {
 	constructor(props) {
 		this.source = new Source()
 		this.vocab = new Vocab()
-		// this.patterns3 = new PatternVolume({name:"3-words", length:3, vocab: this.vocab})
-		// this.patterns4 = new PatternVolume({name:"4-words", length:4, vocab: this.vocab})
-		// this.patterns5 = new PatternVolume({name:"5-words", length:5, vocab: this.vocab})
-		
+
+		// this.patternVol = new PatternVolume({name:"2-words", length:2, vocab: this.vocab})
+		// this.patternVol = new PatternVolume({name:"3-words", length:3, vocab: this.vocab})
+		// this.patternVol = new PatternVolume({name:"4-words", length:4, vocab: this.vocab})
 		this.patternVol =  new PatternVolume({name:"5-words", length:5, vocab: this.vocab})
+
 		this.output = new Output({vocab: this.vocab})
-		this.nn = new Network()
+
+		this.nn = new Network({
+			patternVol: this.patternVol,
+			vocab: this.vocab})
 		
 		this.generator = new Generator({
-			patterns: this.patternVol.getPatterns(), 
 			net: this.nn, 
+			patterns: this.patternVol.getPatterns(), 
 			vocab: this.vocab})
 	}
 
@@ -30,14 +34,16 @@ export class Application {
 		this.source.init()
 		this.vocab.init({words:this.source.getWords()})
 		this.patternVol.init({lines:this.source.getLines()})
-
 		this.nn.init()
 	}
 	
 	generateOutput() {
 		console.log("")
-		console.log("====== Start Generation ===================")		
+		console.log("====== Load Trained Network ===================")		
 		this.nn.loadNetwork()
+		console.log("Loaded successfully.")		
+		console.log("")
+		console.log("====== Start Generation ===================")		
 		for (let i=0; i<100; i++) {
 			let line = this.generator.run()
 			this.output.addMessage({message: line})
@@ -45,9 +51,6 @@ export class Application {
 		this.output.save()
 	}
 
-	generateLine() {
-		this.generator.run()
-	}
 
 	trainNetwork() {
 		this.nn.train({patterns: this.patternVol.getPatterns()})

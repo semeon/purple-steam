@@ -14,7 +14,7 @@ export class Vocab {
 		let result = null
 		for (let i=0; i<this.vocab.array.length; i++) {
 			let item = this.vocab.array[i]
-			if (props.code == item.code || props.value == item.value || props.normCode == item.normCode) {
+			if (props.code == item.code || props.value == item.value || props.normCode == item.normCode || props.class == item.class) {
 				result = item
 			}
 		}
@@ -22,7 +22,7 @@ export class Vocab {
 	}
 
 	getSize() {
-		return this.vocab.array.lengh
+		return this.vocab.array.length
 	}
 
 	init(props) {
@@ -33,12 +33,23 @@ export class Vocab {
 
 	generate(props) {
 		let words = props.words
-		for (let i=0; i<words.length; i++) {
+		let N = words.length
+		for (let i=0; i<N; i++) {
 			let item = {}
+
 			item.code = i
 			item.value = words[i]
-			item.normCode = i/props.words.length
+
+			item.normCode = i/N
 			item.normCode = Math.round(item.normCode * 100000) / 100000
+
+			item.class = i
+
+
+			// item.vector = new Array(N)
+			// item.vector.fill(0)
+			// item.vector[i] = 1
+			
 			this.vocab.array.push(item)
 		}
 		this.vocab.stats.totalItems = this.vocab.array.length

@@ -8,20 +8,30 @@ export class Generator {
 		this.vocab = props.vocab
 		this.net = props.net
 		this.patterns = props.patterns
+		this.maxLineLength = 80
+	}
+
+	test()	{
+		// random seed 
+		let random = chance.integer({min: 0, max: this.patterns.length-1})
+		let seed = this.patterns[random]
+		
+		let newWord = this.net.run({normSeq: seed.preSequence})
+		
 	}
 
 	run() {
-		
 		// random seed 
 		let random = chance.integer({min: 0, max: this.patterns.length-1})
 		let seed = this.patterns[random]
 		let newLine = seed.preSequence[seed.preSequence.length-1]
+		// let newLine = seed.preSequence.join(" ")
 		let sequence = seed.preSequence
 
 		// console.log("SEED: " + newLine)
 
 
-		for (let i=0; i<15; i++) {
+		for (let i=0; i<100; i++) {
 			// console.log("")
 			// console.log("------ Step: " + i + " --------------")
 			// console.log("sequence: " + sequence)
@@ -44,6 +54,8 @@ export class Generator {
 			// generate new word
 			let newWord = this.net.run({normSeq: normSeq})
 			// console.log("new word: " + newWord)
+
+			if (newLine.length + newWord.length > this.maxLineLength) break
 
 			// add the word to the output line
 			newLine = newLine + " " + newWord

@@ -1,5 +1,5 @@
-// https://github.com/harthur/brain
-const brain = require("brain");
+// http://cs.stanford.edu/people/karpathy/convnetjs/docs.html
+const convnetjs = require("convnetjs")
 const sortObj = require('sort-object');
 
 const jsonfile = require('jsonfile')
@@ -9,36 +9,56 @@ const networkJsonFileName = 'root/data/network/nn.json'
 
 export class Network {
 	constructor(props) {
-		// this.net = new brain.NeuralNetwork({hiddenLayers: [16, 16, 16, 16, 16, 16]})
-		this.net = new brain.NeuralNetwork({hiddenLayers: [16, 16]})
-		// this.net = new brain.NeuralNetwork()
+		this.vocab = props.vocab
+		this.patternVol = props.patternVol
+		this.net
+		this.trainer
 	}
 
 	init(props) {
+		let layer_defs = []
+		layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:this.patternVol.getLength()-1})
+		layer_defs.push({type:'fc', num_neurons:200, activation:'relu'})
+		layer_defs.push({type:'softmax', num_classes:this.vocab.getSize()})
+		
+		this.net = new convnetjs.Net()
+		this.net.makeLayers(layer_defs)
+		this.trainer = new convnetjs.Trainer(this.net, 
+			{method: 'adadelta', l2_decay: 0.001, batch_size: 100})
 	}
 	
 	train(props) {
 		console.log("")
 		console.log("====== Start Training ===================")
 
+
+		let patterns = this.patternVol.getPatterns()
+
 		let trainingData = []
-		for (let i=0; i<props.patterns.length; i++) {
-			let pattern = props.patterns[i]
-			let trainingCase = {}
-
-			trainingCase.input = pattern.preSequenceNorm
-			trainingCase.output = {}
-			trainingCase.output[pattern.expectation] = 1
-
-			trainingData.push(trainingCase)
+		for (let i=0; i<patterns.length; i++) {
+			let td = {}
+			td.dataPoint = new convnetjs.Vol(patterns[i].preSequenceNorm)
+			td.class = patterns[i].expectationClass
+			trainingData.push(td)
 		}
-		
-		// console.log("Training Data: ")
-		// console.dir(trainingData)
-		let trainResult = this.net.train(trainingData,{log: true, logPeriod: 100})
-		console.log("Training completed. Result:")
-		console.dir(trainResult)
-		
+
+		// training iterations
+		let iterationNum = 100
+		for (let i=0; i<iterationNum; i++) {
+			for (let j=0; j<trainingData.length; j++) {
+				let stats = this.trainer.train(trainingData[j].dataPoint, trainingData[j].class)
+				// if (i%100 == 0) {
+				// 	console.log(" training iteration:", i, ", data point:", j, ", stats:")
+				// 	console.dir(stats)
+				// }
+			}
+			if (i%10 == 0) {
+				console.log(" training iteration:", i)
+			}
+
+		}
+
+		console.log("Training completed.")
 		this.saveNetwork()
 	}
 	
@@ -50,32 +70,28 @@ export class Network {
 	}
 
 	loadNetwork() {
-		console.log("")
-		console.log("====== Load Trained Network ===================")		
 		let nnJson = jsonfile.readFileSync(networkJsonFileName)		
 		this.net.fromJSON(nnJson)
 	}
+
 	
 	run(props) {
-		let normSeq = props.normSeq
-		let prediction = this.net.run(normSeq)
-
+		let vol = new convnetjs.Vol(props.normSeq)
+		let prediction = this.net.forward(vol).w
 		let bestOption = {}
-		bestOption.rank = 0
-		bestOption.value = ""
+		bestOption.prob = 0
+		bestOption.class = ""
 
-		for (var option in prediction) {
-			let rank = prediction[option]
-			if (bestOption.rank < rank) {
-				bestOption.rank = rank
-				bestOption.value = option
+		for (let i=0; i<prediction.length; i++) {
+			let prob = prediction[i]
+			if (bestOption.prob < prob) {
+				bestOption.prob = prob
+				bestOption.class = i
 			}
 		}
 		
-		// console.log(">>>>>> Run: " + seed.preSequence)
-		// console.dir(bestOption)
+		let result = this.vocab.getItem({class: bestOption.class}).value
 
-		return bestOption.value
-		
+		return result
 	}
 }

@@ -62,4 +62,8 @@ export class PatternVolume {
 	getPatterns() {
 		return this.volume.patterns
 	}
+	
+	getLength() {
+		return this.length
+	}	
 }
