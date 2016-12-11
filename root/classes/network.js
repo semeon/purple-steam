@@ -13,11 +13,14 @@ export class Network {
 		this.patternVol = props.patternVol
 		this.net
 		this.trainer
+		this.trainingIterations = 1000
 	}
 
 	init(props) {
 		let layer_defs = []
 		layer_defs.push({type:'input', out_sx:1, out_sy:1, out_depth:this.patternVol.getLength()-1})
+		layer_defs.push({type:'fc', num_neurons:200, activation:'relu'})
+		layer_defs.push({type:'fc', num_neurons:200, activation:'relu'})
 		layer_defs.push({type:'fc', num_neurons:200, activation:'relu'})
 		layer_defs.push({type:'softmax', num_classes:this.vocab.getSize()})
 		
@@ -43,8 +46,7 @@ export class Network {
 		}
 
 		// training iterations
-		let iterationNum = 100
-		for (let i=0; i<iterationNum; i++) {
+		for (let i=0; i<this.trainingIterations; i++) {
 			for (let j=0; j<trainingData.length; j++) {
 				let stats = this.trainer.train(trainingData[j].dataPoint, trainingData[j].class)
 				// if (i%100 == 0) {
@@ -52,7 +54,7 @@ export class Network {
 				// 	console.dir(stats)
 				// }
 			}
-			if (i%10 == 0) {
+			if (i%100 == 0) {
 				console.log(" training iteration:", i)
 			}
 

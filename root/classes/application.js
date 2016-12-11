@@ -13,8 +13,9 @@ export class Application {
 
 		// this.patternVol = new PatternVolume({name:"2-words", length:2, vocab: this.vocab})
 		// this.patternVol = new PatternVolume({name:"3-words", length:3, vocab: this.vocab})
-		// this.patternVol = new PatternVolume({name:"4-words", length:4, vocab: this.vocab})
-		this.patternVol =  new PatternVolume({name:"5-words", length:5, vocab: this.vocab})
+		this.patternVol = new PatternVolume({name:"4-words", length:4, vocab: this.vocab})
+		// this.patternVol =  new PatternVolume({name:"5-words", length:5, vocab: this.vocab})
+		// this.patternVol =  new PatternVolume({name:"6-words", length:6, vocab: this.vocab})
 
 		this.output = new Output({vocab: this.vocab})
 

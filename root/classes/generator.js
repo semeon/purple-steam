@@ -8,7 +8,7 @@ export class Generator {
 		this.vocab = props.vocab
 		this.net = props.net
 		this.patterns = props.patterns
-		this.maxLineLength = 80
+		this.maxLineLength = 180
 	}
 
 	test()	{

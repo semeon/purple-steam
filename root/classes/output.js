@@ -1,7 +1,7 @@
 const jsonfile = require('jsonfile')
 jsonfile.spaces = 2
 
-const outputMsgFileName = 'root/data/output/tweets.json' 
+const outputMsgFileName = 'root/data/output/output.json' 
 
 export class Output {
 	constructor(props) {
